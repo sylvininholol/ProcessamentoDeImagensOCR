@@ -1,0 +1,1 @@
+lizar_texto_imagem("tomcinza.jpg")
