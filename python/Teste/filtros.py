@@ -31,9 +31,17 @@ def sharp(img):
     largura_tela = root.winfo_screenwidth()
     altura_tela = root.winfo_screenheight()
     root.destroy()
-    sharp1 = np.array([[0, -1, 0],
-                    [-1,8, -1],
-                    [0, -1, 0]])
+    sharp1 = np.array(  [[0, -1, 0],   
+                        [-1, 5, -1],   #Sharpening Simples  
+                        [0, -1, 0]])
+    
+    """sharp1 = np.array(  [[-1, -1, -1],   
+                        [-1, 9, -1],   Sharpening Intenso  
+                        [-1, -1, -1]])
+    
+    sharp1 = np.array(  [[-1, -2, -1],   
+                        [-2, 11, -2],   Sharpening Gaussiano  
+                        [-1, -2, -1]])"""
          
     shrp = cv2.filter2D(img, -1, sharp1)
     #shrp = cv2.resize(shrp, (largura_tela, altura_tela))
@@ -55,7 +63,22 @@ def simple_threshold(img_path, mim_threshold):
 
     return thresh
 
+def media(img_path, kernel_size):
+    root = tk.Tk()
+    #largura_tela = root.winfo_screenwidth()
+    #altura_tela = root.winfo_screenheight()
+    root.destroy()
 
+    #img = cv2.imread(img_path, 0)  # Lê a imagem em escala de cinza
+    img_path = cv2.cvtColor(img_path, cv2.COLOR_BGR2GRAY)
+    # Aplica o filtro de média
+    averaged = cv2.blur(img_path, (kernel_size, kernel_size))
+
+    # Exibe a imagem resultante
+    cv2.imshow('Média', averaged)
+    cv2.waitKey(0)
+
+    return averaged
 
 def mediana(img):
     root = tk.Tk()
@@ -207,3 +230,21 @@ def binarizaracao(imagem_path):
     cv2.waitKey(0)
     
     return imagem_binaria
+
+"""def add_noise(img): 
+
+    row , col = img.shape 
+
+    number_of_pixels = random.randint(2000, 25000) 
+    for i in range(number_of_pixels): 
+        y_coord=random.randint(0, row - 1) 
+        x_coord=random.randint(0, col - 1) 
+        img[y_coord][x_coord] = 255
+
+    number_of_pixels = random.randint(2000 , 25000) 
+    for i in range(number_of_pixels): 
+        y_coord=random.randint(0, row - 1) 
+        x_coord=random.randint(0, col - 1) 
+        img[y_coord][x_coord] = 0
+
+    return img"""
