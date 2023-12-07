@@ -8,6 +8,7 @@ from PIL import Image, ImageTk
 import unicodedata
 import matplotlib.pyplot as plt
 from matplotlib import pyplot as plt
+
 pytesseract.pytesseract.tesseract_cmd = 'C:\Tesseract\Tesseract.exe'
 
 def localizar_texto_imagem(imagem_path): #relativamente bom com os filtros necessários
@@ -18,7 +19,7 @@ def localizar_texto_imagem(imagem_path): #relativamente bom com os filtros neces
     imagem_cinza = cv2.cvtColor(imagem_path, cv2.COLOR_BGR2GRAY)
 
     # Aplicar binarização para destacar o texto
-    _, imagem_binaria = cv2.threshold(imagem_cinza, 128, 255, cv2.THRESH_BINARY)
+    _, imagem_binaria = cv2.threshold(imagem_path, 128, 255, cv2.THRESH_BINARY)
 
     # Encontrar contornos na imagem binária
     contornos, _ = cv2.findContours(imagem_binaria, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -47,11 +48,11 @@ def ler_imagem(imagem_path):
     #imagem = cv2.imread(imagem_path)
 
     # Converter a imagem para escala de cinza
-    imagem_cinza = cv2.cvtColor(imagem_path, cv2.COLOR_BGR2GRAY)
+    #imagem_cinza = cv2.cvtColor(imagem_path, cv2.COLOR_BGR2GRAY)
 
     # Aplicar binarização para destacar o texto
-    _, imagem_binaria = cv2.threshold(imagem_cinza, 128, 255, cv2.THRESH_BINARY)
-
+    #_, imagem_binaria = cv2.threshold(imagem_path, 128, 255, cv2.THRESH_BINARY)
+    imagem_binaria = pre_processamento(imagem_path)
 
     # Reconhecimento de texto usando Tesseract
     texto_reconhecido = pytesseract.image_to_string(imagem_binaria, lang='por')  # 'por' para português
@@ -113,7 +114,7 @@ def pre_processamento(img) -> cv2.typing.MatLike:
     imagemPreProcessada = filtros.gray(imagemPreProcessada)
     
     #Threshold
-    imagemPreProcessada = filtros.simple_threshold(imagemPreProcessada, 127)
+    imagemPreProcessada = filtros.simple_threshold(imagemPreProcessada, 100)
     
     #erosão
     imagemPreProcessada = cv2.erode(imagemPreProcessada, kernel, iterations=1)
@@ -240,19 +241,31 @@ def showSingleImage(img, title, size):
     axis.set_title(title, fontdict = {'fontsize': 22, 'fontweight': 'medium'})
     plt.show()
     
-def plotThreeImages():
-    img_j_original = cv2.imread("trio.jpg", 0)
+def plotThreeImages(img):
+    #img_j_original = cv2.imread("trio.jpg", 0)
 
     #mesma imagem com erosão
         
-    erosao =  cv2.erode(img_j_original, kernel, iterations=1)
+    erosao =  cv2.erode(img, None, iterations=1)
 
     #imagem anterior com dilatação aplicada
-    dilatacao =  cv2.dilate(erosao, kernel, iterations=1)
+    dilatacao =  cv2.dilate(erosao, None, iterations=1)
 
-    imgsArray = [img_j_original, erosao, dilatacao]
+    imgsArray = [img, erosao, dilatacao]
     titlesArray = ['Imagem Original', 'Erosão', 'Dilatação']
     showMultipleImages(imgsArray, titlesArray, (10, 6), 3, 1)
     
     config = "--psm 4"
     resultado = pytesseract.image_to_string(dilatacao, config=config, lang='por')
+    
+def inverter_180_graus(imagem_path):
+    # Lê a imagem de entrada
+    #imagem = cv2.imread(imagem_path)
+
+    # Inverte a imagem em 180 graus
+    imagem_invertida = cv2.rotate(imagem_path, cv2.ROTATE_180)
+    cv2.imshow("Invertida", imagem_invertida)
+    cv2.waitKey(0)
+
+    # Salva a imagem invertida
+    return imagem_invertida
