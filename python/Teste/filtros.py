@@ -1,4 +1,5 @@
 from funcoes import *
+import random
 import cv2
 import pytesseract
 import numpy as np
@@ -70,7 +71,7 @@ def media(img_path, kernel_size):
     root.destroy()
 
     #img = cv2.imread(img_path, 0)  # Lê a imagem em escala de cinza
-    img_path = cv2.cvtColor(img_path, cv2.COLOR_BGR2GRAY)
+    #img_path = cv2.cvtColor(img_path, cv2.COLOR_BGR2GRAY)
     # Aplica o filtro de média
     averaged = cv2.blur(img_path, (kernel_size, kernel_size))
 
@@ -85,7 +86,7 @@ def mediana(img):
     largura_tela = root.winfo_screenwidth()
     altura_tela = root.winfo_screenheight()
     root.destroy()
-    mediana = cv2.medianBlur(img, 5)
+    mediana = cv2.medianBlur(img, 3)
     #mediana = cv2.resize(mediana, (largura_tela, altura_tela))
     cv2.imshow('mediana', mediana)
     cv2.waitKey(0)
@@ -177,10 +178,10 @@ def filtro_destaque(imagem_path):
     #imagem_original = cv2.imread(imagem_path)
 
     # Converter a imagem para escala de cinza
-    imagem_cinza = cv2.cvtColor(imagem_path, cv2.COLOR_BGR2GRAY)
+    #imagem_cinza = cv2.cvtColor(imagem_path, cv2.COLOR_BGR2GRAY)
 
     # Aplicar o filtro Laplaciano para realçar as bordas
-    imagem_destacada = cv2.Laplacian(imagem_cinza, cv2.CV_64F)
+    imagem_destacada = cv2.Laplacian(imagem_path, cv2.CV_64F)
 
     # Normalizar a imagem resultante para o intervalo [0, 255]
     imagem_destacada = cv2.normalize(imagem_destacada, None, 0, 255, cv2.NORM_MINMAX)
@@ -189,10 +190,10 @@ def filtro_destaque(imagem_path):
     imagem_destacada = np.uint8(imagem_destacada)
 
     # Combinação da imagem original com a imagem destacada para realçar as bordas
-    imagem_resultante = cv2.addWeighted(imagem_path, 1, cv2.cvtColor(imagem_destacada, cv2.COLOR_GRAY2BGR), 0.25, 0)
-    cv2.imshow("Imagem Realçada", imagem_resultante)
+    #imagem_resultante = cv2.addWeighted(imagem_path, 1, cv2.cvtColor(imagem_destacada, cv2.COLOR_GRAY2BGR), 0.25, 0)
+    cv2.imshow("Imagem Realçada", imagem_destacada)
     cv2.waitKey(0)
-    return imagem_resultante
+    return imagem_destacada
 
 def filtro_prewitt(imagem_path):
     # Carregar a imagem original
@@ -231,7 +232,7 @@ def binarizaracao(imagem_path):
     
     return imagem_binaria
 
-"""def add_noise(img): 
+def add_noise(img): 
 
     row , col = img.shape 
 
@@ -247,4 +248,4 @@ def binarizaracao(imagem_path):
         x_coord=random.randint(0, col - 1) 
         img[y_coord][x_coord] = 0
 
-    return img"""
+    return img
