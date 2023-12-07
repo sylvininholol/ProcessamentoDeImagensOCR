@@ -11,17 +11,10 @@ from matplotlib import pyplot as plt
 
 pytesseract.pytesseract.tesseract_cmd = 'C:\Tesseract\Tesseract.exe'
 
-def localizar_texto_imagem(imagem_path): #relativamente bom com os filtros necessários
-    # Carregar a imagem usando o OpenCV
-    #image = cv2.imread(image_path)
 
-    # Converter a imagem para escala de cinza
-    #gray_image = cv2.cvtColor(imagem_path, cv2.COLOR_BGR2GRAY)
-
-    # Aplicar um desfoque para ajudar na extração de texto
-    #blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
 
     # Usar o Tesseract para extrair caixas delimitadoras do texto na imagem
+def localizar_texto_imagem(imagem_path): #relativamente bom com os filtros necessários
     boxes = pytesseract.image_to_boxes(imagem_path)
 
     # Desenhar retângulos ao redor do texto na imagem original
@@ -42,14 +35,7 @@ def localizar_texto_imagem(imagem_path): #relativamente bom com os filtros neces
 
 
 def ler_imagem(imagem_path):
-    # Carregar a imagem
-    #imagem = cv2.imread(imagem_path)
 
-    # Converter a imagem para escala de cinza
-    #imagem_cinza = cv2.cvtColor(imagem_path, cv2.COLOR_BGR2GRAY)
-
-    # Aplicar binarização para destacar o texto
-    #_, imagem_binaria = cv2.threshold(imagem_path, 128, 255, cv2.THRESH_BINARY)
     imagem_binaria = pre_processamento(imagem_path)
 
     # Reconhecimento de texto usando Tesseract
@@ -75,11 +61,6 @@ def pos_processamento(texto_reconhecido):
     
     return print(texto_limpo)
 
-# Exemplo de uso
-#texto_reconhecido = " E#xemp$lo de  text?o reco;nhe&cid#o."
-#texto_pos_processado = pos_processamento(texto_reconhecido)
-#print("Texto Pós-Processado:")
-#print(texto_pos_processado)
 
 def redimensionar_imagem_para_tela(imagem_path):
     # Obter as dimensões da tela
@@ -88,8 +69,6 @@ def redimensionar_imagem_para_tela(imagem_path):
     altura_tela = 750 #root.winfo_screenheight()
     root.destroy()
 
-    # Carregar a imagem
-    #imagem = cv2.imread(imagem_path)
 
     # Redimensionar a imagem para as dimensões da tela
     imagem_redimensionada = cv2.resize(imagem_path, (largura_tela, altura_tela))
@@ -121,11 +100,11 @@ def pre_processamento(img) -> cv2.typing.MatLike:
     imagemPreProcessada = cv2.erode(imagemPreProcessada, kernel, iterations=1)
     cv2.imshow("Erosao", imagemPreProcessada)
     cv2.waitKey(0)
-    #dilatação
-    #imagemPreProcessada = cv2.dilate(imagemPreProcessada, kernel, iterations = 1)
-    #cv2.imshow("Dilatacao", imagemPreProcessada)
-    #cv2.waitKey(0)
     
+    #dilatação
+    imagemPreProcessada = cv2.dilate(imagemPreProcessada, kernel, iterations = 1)
+    cv2.imshow("Dilatacao", imagemPreProcessada)
+    cv2.waitKey(0)
     return imagemPreProcessada
     
 
@@ -137,16 +116,9 @@ def segmentar_caractere_texto(img):
     
 
 def segmentar_caracteres_imagem(image_path):
-    # Carregar a imagem usando o OpenCV
-    #image = cv2.imread(image_path)
 
-    # Converter a imagem para escala de cinza
-    #gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Aplicar um desfoque para ajudar na extração de texto
-    #blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
-
-    # Usar o Tesseract para extrair caixas delimitadoras do texto na imagem
+    # Extrair caixas delimitadoras do texto na imagem
     boxes = pytesseract.image_to_boxes(image_path)
 
     # Iterar sobre as caixas delimitadoras e segmentar os caracteres
@@ -247,9 +219,6 @@ def showSingleImage(img, title, size):
     plt.show()
     
 def plotThreeImages(img):
-    #img_j_original = cv2.imread("trio.jpg", 0)
-
-    #mesma imagem com erosão
         
     erosao =  cv2.erode(img, None, iterations=1)
 
@@ -264,8 +233,7 @@ def plotThreeImages(img):
     resultado = pytesseract.image_to_string(dilatacao, config=config, lang='por')
     
 def inverter_180_graus(imagem_path):
-    # Lê a imagem de entrada
-    #imagem = cv2.imread(imagem_path)
+
 
     # Inverte a imagem em 180 graus
     imagem_invertida = cv2.rotate(imagem_path, cv2.ROTATE_180)
