@@ -12,28 +12,26 @@ from matplotlib import pyplot as plt
 pytesseract.pytesseract.tesseract_cmd = 'C:\Tesseract\Tesseract.exe'
 
 def localizar_texto_imagem(imagem_path): #relativamente bom com os filtros necessários
-    # Carregar a imagem
-    #imagem = cv2.imread(imagem_path)
+    # Carregar a imagem usando o OpenCV
+    #image = cv2.imread(image_path)
 
     # Converter a imagem para escala de cinza
-    imagem_cinza = cv2.cvtColor(imagem_path, cv2.COLOR_BGR2GRAY)
+    #gray_image = cv2.cvtColor(imagem_path, cv2.COLOR_BGR2GRAY)
 
-    # Aplicar binarização para destacar o texto
-    _, imagem_binaria = cv2.threshold(imagem_path, 128, 255, cv2.THRESH_BINARY)
+    # Aplicar um desfoque para ajudar na extração de texto
+    #blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
 
-    # Encontrar contornos na imagem binária
-    contornos, _ = cv2.findContours(imagem_binaria, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # Usar o Tesseract para extrair caixas delimitadoras do texto na imagem
+    boxes = pytesseract.image_to_boxes(imagem_path)
 
-    # Iterar sobre os contornos encontrados
-    for contorno in contornos:
-        # Calcular a caixa delimitadora do contorno
-        x, y, w, h = cv2.boundingRect(contorno)
+    # Desenhar retângulos ao redor do texto na imagem original
+    for box in boxes.splitlines():
+        b = box.split()
+        x, y, w, h = int(b[1]), int(b[2]), int(b[3]), int(b[4])
+        cv2.rectangle(imagem_path, (x, y), (w, h), (255, 0, 255), 2)
 
-        # Desenhar um retângulo ao redor do contorno
-        cv2.rectangle(imagem_path, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
-    # Exibir a imagem com os contornos destacados
-    cv2.imshow('Contornos de Texto', imagem_path)
+    # Exibir a imagem com os retângulos marcados
+    cv2.imshow("Localized Text", imagem_path)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
@@ -60,6 +58,7 @@ def ler_imagem(imagem_path):
     # Exibir o texto reconhecido
     print("Texto Reconhecido:")
     print(texto_reconhecido)
+    return imagem_binaria
 
 # Exemplo de uso da função
 #reconhecer_caractere('caminho/para/seu/caractere.jpg')
@@ -107,20 +106,25 @@ def redimensionar_imagem_para_tela(imagem_path):
 
 #Pré Processamento com redimensionalização de tela, filtro cinza, threshold, erosão e dilatação
 def pre_processamento(img) -> cv2.typing.MatLike:
-    kernel = np.ones((3,3),np.uint8)
+    kernel = np.ones((2,2),np.uint8)
     imagemPreProcessada = redimensionar_imagem_para_tela(img)
     
     #Deixar cinza
     imagemPreProcessada = filtros.gray(imagemPreProcessada)
     
+    imagemPreProcessada = filtros.filtro_destaque(imagemPreProcessada)
     #Threshold
-    imagemPreProcessada = filtros.simple_threshold(imagemPreProcessada, 100)
+    imagemPreProcessada = filtros.simple_threshold(imagemPreProcessada, 150)
     
+    imagemPreProcessada = filtros.media(imagemPreProcessada, 3)
     #erosão
     imagemPreProcessada = cv2.erode(imagemPreProcessada, kernel, iterations=1)
-    
+    cv2.imshow("Erosao", imagemPreProcessada)
+    cv2.waitKey(0)
     #dilatação
-    imagemPreProcessada = cv2.dilate(imagemPreProcessada, kernel, iterations = 1)
+    #imagemPreProcessada = cv2.dilate(imagemPreProcessada, kernel, iterations = 1)
+    #cv2.imshow("Dilatacao", imagemPreProcessada)
+    #cv2.waitKey(0)
     
     return imagemPreProcessada
     
@@ -132,30 +136,31 @@ def segmentar_caractere_texto(img):
     print(texto)
     
 
-def segmentar_caracteres_imagem(imagem_path):
-    # Carregar a imagem original
-    #imagem_original = cv2.imread(imagem_path)
+def segmentar_caracteres_imagem(image_path):
+    # Carregar a imagem usando o OpenCV
+    #image = cv2.imread(image_path)
 
     # Converter a imagem para escala de cinza
-    imagem_cinza = cv2.cvtColor(imagem_path, cv2.COLOR_BGR2GRAY)
+    #gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Aplicar binarização para destacar o texto
-    _, imagem_binaria = cv2.threshold(imagem_cinza, 128, 255, cv2.THRESH_BINARY_INV)
+    # Aplicar um desfoque para ajudar na extração de texto
+    #blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
 
-    # Encontrar contornos na imagem binária
-    contornos, _ = cv2.findContours(imagem_binaria, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # Usar o Tesseract para extrair caixas delimitadoras do texto na imagem
+    boxes = pytesseract.image_to_boxes(image_path)
 
-    # Extrair regiões de interesse (ROIs) dos contornos
-    for i, contorno in enumerate(contornos):
-        x, y, w, h = cv2.boundingRect(contorno)
+    # Iterar sobre as caixas delimitadoras e segmentar os caracteres
+    for box in boxes.splitlines():
+        b = box.split()
+        x, y, w, h = int(b[1]), int(b[2]), int(b[3]), int(b[4])
 
-        # Ignorar pequenos contornos (ajuste conforme necessário)
-        if w > 10 and h > 10:
-            # Extrair ROI da imagem original
-            caractere_roi = imagem_path[y:y+h, x:x+w]
+        # Extrair a região de interesse (ROI) correspondente a cada caractere
+        character_roi = image_path[y:h, x:w]
 
-            cv2.imshow("Caractere Segmentado", caractere_roi)
-            cv2.waitKey(0)
+        # Exibir cada caractere segmentado
+        cv2.imshow("Segmented Character", character_roi)
+        cv2.waitKey(0)  # Aguardar 1 segundo entre cada caractere
+        cv2.destroyAllWindows()
             
 def showImage(img):
     imgMPLIB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
