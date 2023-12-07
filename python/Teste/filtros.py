@@ -17,10 +17,6 @@ def gray(img_path):
     largura_tela = root.winfo_screenwidth()
     altura_tela = root.winfo_screenheight()
     root.destroy()
-    #img = cv2.imread(img_path)
-    #img = cv2.resize(img_path, (largura_tela, altura_tela))
-    #cv2.imshow('original image', img)
-    #cv2.waitKey(0)
     gray = cv2.cvtColor(img_path, cv2.COLOR_BGR2GRAY)
     cv2.imshow('gray', gray)
     cv2.waitKey(0)
@@ -45,7 +41,6 @@ def sharp(img):
                         [-1, -2, -1]])"""
          
     shrp = cv2.filter2D(img, -1, sharp1)
-    #shrp = cv2.resize(shrp, (largura_tela, altura_tela))
     cv2.imshow('sharp', shrp)
     cv2.waitKey(0)
     return shrp
@@ -57,7 +52,6 @@ def simple_threshold(img_path, mim_threshold):
     altura_tela = root.winfo_screenheight()
     root.destroy()
     val, thresh = cv2.threshold(img_path, mim_threshold, 255, cv2.THRESH_BINARY) #pixeis q forem inferiores a mim_threshold serão considerados como 0 e se for maior, sera considerado como 255(branco)
-    #thresh = cv2.resize(thresh, (largura_tela, altura_tela))
     cv2.imshow('thresh', thresh)
 
     cv2.waitKey(0)
@@ -66,12 +60,9 @@ def simple_threshold(img_path, mim_threshold):
 
 def media(img_path, kernel_size):
     root = tk.Tk()
-    #largura_tela = root.winfo_screenwidth()
-    #altura_tela = root.winfo_screenheight()
     root.destroy()
 
-    #img = cv2.imread(img_path, 0)  # Lê a imagem em escala de cinza
-    #img_path = cv2.cvtColor(img_path, cv2.COLOR_BGR2GRAY)
+
     # Aplica o filtro de média
     averaged = cv2.blur(img_path, (kernel_size, kernel_size))
 
@@ -87,7 +78,6 @@ def mediana(img):
     altura_tela = root.winfo_screenheight()
     root.destroy()
     mediana = cv2.medianBlur(img, 3)
-    #mediana = cv2.resize(mediana, (largura_tela, altura_tela))
     cv2.imshow('mediana', mediana)
     cv2.waitKey(0)
     return mediana
@@ -162,8 +152,6 @@ class GaussianNotchFilter:
         return
     
 def blur(imagem_path, x):
-    # Carregar a imagem original
-    #imagem_original = cv2.imread(imagem_path)
 
     # Aplicar um desfoque médio (blur)
     imagem_com_blur = cv2.blur(imagem_path, (x, x), 0)  # O segundo argumento é o tamanho do kernel
@@ -174,11 +162,7 @@ def blur(imagem_path, x):
 
 
 def filtro_destaque(imagem_path):
-    # Carregar a imagem original
-    #imagem_original = cv2.imread(imagem_path)
 
-    # Converter a imagem para escala de cinza
-    #imagem_cinza = cv2.cvtColor(imagem_path, cv2.COLOR_BGR2GRAY)
 
     # Aplicar o filtro Laplaciano para realçar as bordas
     imagem_destacada = cv2.Laplacian(imagem_path, cv2.CV_64F)
@@ -196,15 +180,11 @@ def filtro_destaque(imagem_path):
     return imagem_destacada
 
 def filtro_prewitt(imagem_path):
-    # Carregar a imagem original
-    #imagem_original = cv2.imread(imagem_path)
 
-    # Converter a imagem para escala de cinza
-    imagem_cinza1 = cv2.cvtColor(imagem_path, cv2.COLOR_BGR2GRAY)
 
     # Aplicar os filtros de Prewitt
-    prewitt_x = cv2.filter2D(imagem_cinza1, cv2.CV_64F, np.array([[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]]))
-    prewitt_y = cv2.filter2D(imagem_cinza1, cv2.CV_64F, np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]]))
+    prewitt_x = cv2.filter2D(imagem_path, cv2.CV_64F, np.array([[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]]))
+    prewitt_y = cv2.filter2D(imagem_path, cv2.CV_64F, np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]]))
 
     # Calcular a magnitude do gradiente
     magnitude_gradiente = np.sqrt(prewitt_x**2 + prewitt_y**2)
@@ -218,8 +198,6 @@ def filtro_prewitt(imagem_path):
 
 
 def binarizaracao(imagem_path):
-    # Carregar a imagem original
-    #imagem_original = cv2.imread(imagem_path)
 
     # Converter a imagem para escala de cinza
     imagem_cinza = cv2.cvtColor(imagem_path, cv2.COLOR_BGR2GRAY)
